@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<project name="AntExample1" default="war">
+
+	<path id="compile.classpath">
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="build/classes" />
+		<mkdir dir="dist" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac destdir="build/classes" debug="true" srcdir="src">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+	<target name="war" depends="compile,prepare-lib">
+		<war destfile="dist/axisattachmentservice.war" webxml="webapp/WEB-INF/web.xml">
+			<fileset dir="webapp" />
+			<lib dir="webapp/WEB-INF/lib" />
+			<classes dir="build/classes" />
+		</war>
+	</target>
+
+	<target name="clean">
+		<delete dir="dist" />
+		<delete dir="build" />
+	</target>
+
+	<target name="prepare-lib">
+		<copy todir="webapp/WEB-INF/lib">
+			<fileset dir="lib">
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="generate-wsdd">
+		<java classname="org.apache.axis.client.AdminClient">
+			<arg value="-lhttp://localhost:8080/axisws/services/AttachmentService deploy.wsdd" />
+			<classpath>
+				<path refid="compile.classpath">
+				</path>
+				<pathelement location="build/classes" />
+			</classpath>
+		</java>
+	</target>
+</project>
